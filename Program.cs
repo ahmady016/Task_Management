@@ -1,8 +1,12 @@
-
-using System.Text.Json.Serialization;
 using System.Reflection;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+
 using Serilog;
 using MediatR;
+
+using TaskManagement.Common;
+using TaskManagement.DB;
 
 // create the web server builder
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +22,18 @@ builder.Logging.AddSerilog(logger);
 #region Add services to the container:
 var assembly = Assembly.GetExecutingAssembly();
 var assemblyName = assembly.GetName().Name;
+
+// Register ResultService
+builder.Services.AddSingleton<IResultService, ResultService>();
+
+// Register the db context
+var dbConnection = builder.Configuration.GetConnectionString("Local");
+builder.Services.AddDbContext<TaskManagementContext>(options => options.UseSqlServer(dbConnection));
+// Register DB Service
+builder.Services.AddScoped<IDBService, DBService>();
+
+// Register Mapster
+builder.Services.AddMapster();
 
 // Register MediatR
 builder.Services.AddMediatR(assembly);
@@ -47,7 +63,15 @@ builder.Services.AddSwaggerGen(config =>
 // build the web server
 var app = builder.Build();
 
+// initialize AutoMapperProfile with FileService
+FileService.Initialize(app.Services.CreateScope().ServiceProvider.GetRequiredService<IWebHostEnvironment>());
+
 #region Configure the HTTP request pipeline:
+// global exception handler
+app.UseMiddleware<ErrorHandlerMiddleware>();
+
+// db seeder
+await app.UseDbSeeder();
 
 // swagger API docs
 app.UseSwagger();
