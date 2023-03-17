@@ -20,6 +20,8 @@ public class Employee
     public Guid? ManagerId { get; set; }
 
     public virtual Department Department { get; set; }
+    public virtual ICollection<Project> CreatedProject { get; set; } = new HashSet<Project>();
+    public virtual ICollection<Project> ManagedProject { get; set; } = new HashSet<Project>();
 }
 
 public class EmployeeConfig : IEntityTypeConfiguration<Employee>

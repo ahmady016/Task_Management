@@ -33,6 +33,14 @@ public enum ProjectTypes : byte
     Scrum = 5
 }
 
+public enum ProjectStatuses : byte
+{
+    Waiting = 1,
+    Running = 2,
+    Canceled = 3,
+    Completed = 4
+}
+
 public enum TaskPriorities : byte
 {
     Low = 1,
