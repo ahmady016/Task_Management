@@ -22,6 +22,7 @@ public class Employee
     public virtual Department Department { get; set; }
     public virtual ICollection<Project> CreatedProject { get; set; } = new HashSet<Project>();
     public virtual ICollection<Project> ManagedProject { get; set; } = new HashSet<Project>();
+    public virtual ICollection<AppTask> CreatedTasks { get; set; } = new HashSet<AppTask>();
 }
 
 public class EmployeeConfig : IEntityTypeConfiguration<Employee>
@@ -90,7 +91,7 @@ public class EmployeeConfig : IEntityTypeConfiguration<Employee>
             .WithMany(orgHierarchy => orgHierarchy.Employees)
             .HasForeignKey(employee => employee.DepartmentId)
             .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("org_hierarchies_employees_fk");
+            .HasConstraintName("departments_employees_fk");
 
     }
 }
