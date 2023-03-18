@@ -20,6 +20,7 @@ public class AppTask
 
     public virtual Project Project { get; set; }
     public virtual Employee Creator { get; set; }
+    public virtual ICollection<TaskStatus> Statuses { get; set; } = new HashSet<TaskStatus>();
 }
 
 public class AppTaskConfiguration : IEntityTypeConfiguration<AppTask>
