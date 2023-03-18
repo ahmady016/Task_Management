@@ -23,6 +23,8 @@ public class Employee
     public virtual ICollection<Project> CreatedProject { get; set; } = new HashSet<Project>();
     public virtual ICollection<Project> ManagedProject { get; set; } = new HashSet<Project>();
     public virtual ICollection<AppTask> CreatedTasks { get; set; } = new HashSet<AppTask>();
+    public virtual ICollection<TaskAssignee> AssignerTasks { get; set; } = new HashSet<TaskAssignee>();
+    public virtual ICollection<TaskAssignee> AssignedTasks { get; set; } = new HashSet<TaskAssignee>();
 }
 
 public class EmployeeConfig : IEntityTypeConfiguration<Employee>

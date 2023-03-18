@@ -21,9 +21,10 @@ public class AppTask
     public virtual Project Project { get; set; }
     public virtual Employee Creator { get; set; }
     public virtual ICollection<TaskStatus> Statuses { get; set; } = new HashSet<TaskStatus>();
+    public virtual ICollection<TaskAssignee> Assignees { get; set; } = new HashSet<TaskAssignee>();
 }
 
-public class AppTaskConfiguration : IEntityTypeConfiguration<AppTask>
+public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
 {
     public void Configure(EntityTypeBuilder<AppTask> entity)
     {

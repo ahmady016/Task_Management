@@ -17,7 +17,7 @@ public class TaskStatus
     public virtual AppTask Task { get; set; }
 }
 
-public class TaskStatusConfiguration : IEntityTypeConfiguration<TaskStatus>
+public class TaskStatusConfig : IEntityTypeConfiguration<TaskStatus>
 {
     public void Configure(EntityTypeBuilder<TaskStatus> entity)
     {
