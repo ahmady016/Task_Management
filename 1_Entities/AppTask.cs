@@ -22,6 +22,7 @@ public class AppTask
     public virtual Employee Creator { get; set; }
     public virtual ICollection<TaskStatus> Statuses { get; set; } = new HashSet<TaskStatus>();
     public virtual ICollection<TaskAssignee> Assignees { get; set; } = new HashSet<TaskAssignee>();
+    public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
 }
 
 public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
