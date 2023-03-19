@@ -26,6 +26,7 @@ public class Employee
     public virtual ICollection<TaskAssignment> AssignerTasks { get; set; } = new HashSet<TaskAssignment>();
     public virtual ICollection<TaskAssignment> AssignedTasks { get; set; } = new HashSet<TaskAssignment>();
     public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
+    public virtual ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
 }
 
 public class EmployeeConfig : IEntityTypeConfiguration<Employee>

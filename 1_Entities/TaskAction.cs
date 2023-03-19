@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Bogus;
 
-using TaskManagement.Common;
-
 namespace TaskManagement.Entities;
 
 public class TaskAction

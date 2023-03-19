@@ -23,6 +23,7 @@ public class AppTask
     public virtual ICollection<TaskStatus> Statuses { get; set; } = new HashSet<TaskStatus>();
     public virtual ICollection<TaskAssignment> Assignees { get; set; } = new HashSet<TaskAssignment>();
     public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
+    public virtual ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
 }
 
 public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
@@ -82,14 +83,14 @@ public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
             .HasColumnName("created_by")
             .HasColumnType("uniqueidentifier");
 
-        entity.HasIndex(e => e.ProjectId, "employees_project_id_fk_index");
+        entity.HasIndex(e => e.ProjectId, "tasks_project_id_fk_index");
         entity.HasOne(task => task.Project)
             .WithMany(project => project.Tasks)
             .HasForeignKey(task => task.ProjectId)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("projects_tasks_fk");
 
-        entity.HasIndex(e => e.CreatedBy, "employees_tasks_created_by_fk_index");
+        entity.HasIndex(e => e.CreatedBy, "tasks_created_by_fk_index");
         entity.HasOne(task => task.Creator)
             .WithMany(employee => employee.CreatedTasks)
             .HasForeignKey(task => task.CreatedBy)
