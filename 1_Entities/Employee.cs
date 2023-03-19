@@ -28,6 +28,7 @@ public class Employee
     public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
     public virtual ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
     public virtual ICollection<CommentReply> Replies { get; set; } = new HashSet<CommentReply>();
+    public virtual ICollection<TaskAttachment> CreatedFiles { get; set; } = new HashSet<TaskAttachment>();
 }
 
 public class EmployeeConfig : IEntityTypeConfiguration<Employee>
@@ -101,8 +102,8 @@ public class EmployeeConfig : IEntityTypeConfiguration<Employee>
     }
 }
 
-public class EmployeeFaker : Faker<Employee> {
-    private short counter = 1;
+public class EmployeeFaker : Faker<Employee>
+{
     public EmployeeFaker()
     {
         RuleFor(o => o.FullName, f => f.Name.FullName(f.PickRandom<Bogus.DataSets.Name.Gender>()));

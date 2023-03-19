@@ -24,6 +24,7 @@ public class AppTask
     public virtual ICollection<TaskAssignment> Assignees { get; set; } = new HashSet<TaskAssignment>();
     public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
     public virtual ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
+    public virtual ICollection<TaskAttachment> Attachments { get; set; } = new HashSet<TaskAttachment>();
 }
 
 public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
