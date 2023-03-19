@@ -14,6 +14,7 @@ public class TaskComment
 
     public virtual Employee Commenter { get; set; }
     public virtual AppTask Task { get; set; }
+    public virtual ICollection<CommentReply> Replies { get; set; } = new HashSet<CommentReply>();
 }
 
 public class TaskCommentConfig : IEntityTypeConfiguration<TaskComment>
@@ -50,14 +51,14 @@ public class TaskCommentConfig : IEntityTypeConfiguration<TaskComment>
             .HasColumnName("task_id")
             .HasColumnType("uniqueidentifier");
 
-        entity.HasIndex(e => e.CommentedBy, "tasks_commented_by_fk_index");
+        entity.HasIndex(e => e.CommentedBy, "tasks_comments_commented_by_fk_index");
         entity.HasOne(comment => comment.Commenter)
             .WithMany(employee => employee.Comments)
             .HasForeignKey(comment => comment.CommentedBy)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("employees_tasks_comments_fk");
 
-        entity.HasIndex(e => e.TaskId, "tasks_task_id_fk_index");
+        entity.HasIndex(e => e.TaskId, "tasks_comments_task_id_fk_index");
         entity.HasOne(comment => comment.Task)
             .WithMany(task => task.Comments)
             .HasForeignKey(comment => comment.TaskId)
