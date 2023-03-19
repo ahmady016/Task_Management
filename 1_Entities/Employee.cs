@@ -29,6 +29,7 @@ public class Employee
     public virtual ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
     public virtual ICollection<CommentReply> Replies { get; set; } = new HashSet<CommentReply>();
     public virtual ICollection<TaskAttachment> CreatedFiles { get; set; } = new HashSet<TaskAttachment>();
+    public virtual ICollection<AppLabel> CreatedLabels { get; set; } = new HashSet<AppLabel>();
 }
 
 public class EmployeeConfig : IEntityTypeConfiguration<Employee>

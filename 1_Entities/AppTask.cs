@@ -25,6 +25,7 @@ public class AppTask
     public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
     public virtual ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
     public virtual ICollection<TaskAttachment> Attachments { get; set; } = new HashSet<TaskAttachment>();
+    public virtual ICollection<TaskLabel> Labels { get; set; } = new HashSet<TaskLabel>();
 }
 
 public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
@@ -101,7 +102,8 @@ public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
     }
 }
 
-public class AppTaskFaker : Faker<AppTask> {
+public class AppTaskFaker : Faker<AppTask>
+{
     private short counter = 1;
     public AppTaskFaker()
     {
