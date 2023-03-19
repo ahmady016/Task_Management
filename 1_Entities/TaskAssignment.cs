@@ -2,11 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Bogus;
 
-using TaskManagement.Common;
-
 namespace TaskManagement.Entities;
 
-public class TaskAssignee
+public class TaskAssignment
 {
     public Guid Id { get; set; }
     public Guid TaskId { get; set; }
@@ -21,11 +19,11 @@ public class TaskAssignee
     public virtual Employee Assignee { get; set; }
 }
 
-public class TaskAssigneeConfig : IEntityTypeConfiguration<TaskAssignee>
+public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
 {
-    public void Configure(EntityTypeBuilder<TaskAssignee> entity)
+    public void Configure(EntityTypeBuilder<TaskAssignment> entity)
     {
-        entity.ToTable("tasks_assignees");
+        entity.ToTable("tasks_assignments");
         entity.HasKey(t => t.Id);
 
         entity.Property(e => e.Id)
@@ -66,32 +64,32 @@ public class TaskAssigneeConfig : IEntityTypeConfiguration<TaskAssignee>
             .HasColumnName("leave_reason")
             .HasColumnType("nvarchar(500)");
 
-        entity.HasIndex(e => e.TaskId, "tasks_assignees_task_id_fk_index");
+        entity.HasIndex(e => e.TaskId, "tasks_assignments_task_id_fk_index");
         entity.HasOne(taskAssignee => taskAssignee.Task)
             .WithMany(task => task.Assignees)
             .HasForeignKey(taskAssignee => taskAssignee.TaskId)
             .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("tasks_tasks_assignees_fk");
+            .HasConstraintName("tasks_tasks_assignments_fk");
 
-        entity.HasIndex(e => e.AssignedBy, "tasks_assignees_assigned_by_fk_index");
+        entity.HasIndex(e => e.AssignedBy, "tasks_assignments_assigned_by_fk_index");
         entity.HasOne(taskAssignee => taskAssignee.Assigner)
             .WithMany(employee => employee.AssignerTasks)
             .HasForeignKey(taskAssignee => taskAssignee.AssignedBy)
             .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("assigners_tasks_assignees_fk");
+            .HasConstraintName("assigners_tasks_assignments_fk");
 
-        entity.HasIndex(e => e.AssignedTo, "tasks_assignees_assigned_to_fk_index");
+        entity.HasIndex(e => e.AssignedTo, "tasks_assignments_assigned_to_fk_index");
         entity.HasOne(taskAssignee => taskAssignee.Assignee)
             .WithMany(employee => employee.AssignedTasks)
             .HasForeignKey(taskAssignee => taskAssignee.AssignedTo)
             .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("assignees_tasks_assignees_fk");
+            .HasConstraintName("assignees_tasks_assignments_fk");
 
     }
 }
 
-public class TaskAssigneeFaker : Faker<TaskAssignee> {
-    public TaskAssigneeFaker()
+public class TaskAssignmentFaker : Faker<TaskAssignment> {
+    public TaskAssignmentFaker()
     {
         RuleFor(o => o.AssignedAt, f => f.Date.Between(DateTime.UtcNow.AddMonths(-6), DateTime.UtcNow));
         RuleFor(o => o.LeftAt, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(4)).OrNull(f, 0.8f));

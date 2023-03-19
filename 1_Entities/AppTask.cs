@@ -21,7 +21,7 @@ public class AppTask
     public virtual Project Project { get; set; }
     public virtual Employee Creator { get; set; }
     public virtual ICollection<TaskStatus> Statuses { get; set; } = new HashSet<TaskStatus>();
-    public virtual ICollection<TaskAssignee> Assignees { get; set; } = new HashSet<TaskAssignee>();
+    public virtual ICollection<TaskAssignment> Assignees { get; set; } = new HashSet<TaskAssignment>();
     public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
 }
 
