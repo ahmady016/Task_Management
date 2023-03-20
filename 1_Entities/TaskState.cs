@@ -6,10 +6,10 @@ using TaskManagement.Common;
 
 namespace TaskManagement.Entities;
 
-public class TaskStatus
+public class TaskState
 {
     public Guid Id { get; set; }
-    public TaskStatuses StatusId { get; set; }
+    public TaskStates StateId { get; set; }
     public DateTime From { get; set; } = DateTime.UtcNow;
     public DateTime? To { get; set; }
     public Guid TaskId { get; set; }
@@ -17,11 +17,11 @@ public class TaskStatus
     public virtual AppTask Task { get; set; }
 }
 
-public class TaskStatusConfig : IEntityTypeConfiguration<TaskStatus>
+public class TaskStateConfig : IEntityTypeConfiguration<TaskState>
 {
-    public void Configure(EntityTypeBuilder<TaskStatus> entity)
+    public void Configure(EntityTypeBuilder<TaskState> entity)
     {
-        entity.ToTable("tasks_statuses");
+        entity.ToTable("tasks_states");
         entity.HasKey(t => t.Id);
 
         entity.Property(e => e.Id)
@@ -29,10 +29,10 @@ public class TaskStatusConfig : IEntityTypeConfiguration<TaskStatus>
             .HasColumnName("id")
             .HasColumnType("uniqueidentifier");
 
-        entity.Property(e => e.StatusId)
+        entity.Property(e => e.StateId)
             .IsRequired()
-            .HasDefaultValue(TaskStatuses.Pending)
-            .HasColumnName("status_id")
+            .HasDefaultValue(TaskStates.Pending)
+            .HasColumnName("state_id")
             .HasColumnType("tinyint");
 
         entity.Property(e => e.From)
@@ -50,20 +50,21 @@ public class TaskStatusConfig : IEntityTypeConfiguration<TaskStatus>
             .HasColumnName("task_id")
             .HasColumnType("uniqueidentifier");
 
-        entity.HasIndex(e => e.TaskId, "tasks_statuses_task_id_fk_index");
-        entity.HasOne(taskStatus => taskStatus.Task)
-            .WithMany(task => task.Statuses)
-            .HasForeignKey(taskStatus => taskStatus.TaskId)
+        entity.HasIndex(e => e.TaskId, "tasks_states_task_id_fk_index");
+        entity.HasOne(taskState => taskState.Task)
+            .WithMany(task => task.States)
+            .HasForeignKey(taskState => taskState.TaskId)
             .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("tasks_tasks_statuses_fk");
+            .HasConstraintName("tasks_tasks_states_fk");
 
     }
 }
 
-public class TaskStatusFaker : Faker<TaskStatus> {
-    public TaskStatusFaker()
+public class TaskStateFaker : Faker<TaskState>
+{
+    public TaskStateFaker()
     {
-        RuleFor(o => o.StatusId, f => f.PickRandom<TaskStatuses>());
+        RuleFor(o => o.StateId, f => f.PickRandom<TaskStates>());
         RuleFor(o => o.To, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6)).OrNull(f, 0.6f));
     }
 }

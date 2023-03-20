@@ -49,7 +49,7 @@ public enum TaskPriorities : byte
     RealTime = 4
 }
 
-public enum TaskStatuses : byte
+public enum TaskStates : byte
 {
     Pending = 1,
     InProgress = 2,
