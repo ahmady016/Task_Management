@@ -11,10 +11,10 @@ public class TaskComment
     public DateTime CommentedAt { get; set; }
     public Guid CommentedBy { get; set; }
     public Guid TaskId { get; set; }
+    public Guid? CommentId { get; set; }
 
     public virtual Employee Commenter { get; set; }
     public virtual AppTask Task { get; set; }
-    public virtual ICollection<CommentReply> Replies { get; set; } = new HashSet<CommentReply>();
 }
 
 public class TaskCommentConfig : IEntityTypeConfiguration<TaskComment>
@@ -49,6 +49,10 @@ public class TaskCommentConfig : IEntityTypeConfiguration<TaskComment>
         entity.Property(e => e.TaskId)
             .IsRequired()
             .HasColumnName("task_id")
+            .HasColumnType("uniqueidentifier");
+
+        entity.Property(e => e.CommentId)
+            .HasColumnName("comment_id")
             .HasColumnType("uniqueidentifier");
 
         entity.HasIndex(e => e.CommentedBy, "tasks_comments_commented_by_fk_index");

@@ -10,7 +10,7 @@ public class Department
     public string Title { get; set; }
     public string Description { get; set; }
     public Guid? ManagerId { get; set; }
-    public Guid? ReferenceId { get; set; }
+    public Guid? DepartmentId { get; set; }
 
     public virtual ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();
 }
@@ -47,8 +47,8 @@ public class DepartmentConfig : IEntityTypeConfiguration<Department>
             .HasColumnName("manager_id")
             .HasColumnType("uniqueidentifier");
 
-        entity.Property(e => e.ReferenceId)
-            .HasColumnName("reference_id")
+        entity.Property(e => e.DepartmentId)
+            .HasColumnName("department_id")
             .HasColumnType("uniqueidentifier");
     }
 }
