@@ -12,9 +12,9 @@ public class Employee
     public string FullName { get; set; }
     public string Email { get; set; }
     public string JobTitle { get; set; }
-    public EmployeeTypes TypeId { get; set; } = EmployeeTypes.FullTime;
-    public Gender GenderId { get; set; } = Gender.Male;
-    public MaritalStatuses MaritalStatusId { get; set; } = MaritalStatuses.Single;
+    public EmployeeTypes Type { get; set; } = EmployeeTypes.FullTime;
+    public Gender Gender { get; set; } = Gender.Male;
+    public MaritalStatuses MaritalStatus { get; set; } = MaritalStatuses.Single;
     public string PhotoUrl { get; set; }
     public Guid? DepartmentId { get; set; }
     public Guid? ManagerId { get; set; }
@@ -63,23 +63,29 @@ public class EmployeeConfig : IEntityTypeConfiguration<Employee>
             .HasColumnName("job_title")
             .HasColumnType("nvarchar(100)");
 
-        entity.Property(e => e.TypeId)
+        entity.Property(e => e.Type)
             .IsRequired()
-            .HasDefaultValue(EmployeeTypes.FullTime)
-            .HasColumnName("type_id")
-            .HasColumnType("tinyint");
+            .HasMaxLength(10)
+            .HasColumnName("type")
+            .HasColumnType("varchar(10)")
+            .HasDefaultValue(EmployeeTypes.FullTime.ToString())
+            .HasConversion(value => value.ToString(), value => Enum.Parse<EmployeeTypes>(value));
 
-        entity.Property(e => e.GenderId)
+        entity.Property(e => e.Gender)
             .IsRequired()
-            .HasDefaultValue(Gender.Male)
-            .HasColumnName("gender_id")
-            .HasColumnType("tinyint");
+            .HasMaxLength(6)
+            .HasColumnName("gender")
+            .HasColumnType("varchar(6)")
+            .HasDefaultValue(Gender.Male.ToString())
+            .HasConversion(value => value.ToString(), value => Enum.Parse<Gender>(value));
 
-        entity.Property(e => e.MaritalStatusId)
+        entity.Property(e => e.MaritalStatus)
             .IsRequired()
-            .HasDefaultValue(MaritalStatuses.Single)
-            .HasColumnName("marital_status_id")
-            .HasColumnType("tinyint");
+            .HasMaxLength(10)
+            .HasColumnName("marital_status")
+            .HasColumnType("varchar(10)")
+            .HasDefaultValue(MaritalStatuses.Single.ToString())
+            .HasConversion(value => value.ToString(), value => Enum.Parse<MaritalStatuses>(value));
 
         entity.Property(e => e.PhotoUrl)
             .HasMaxLength(200)
@@ -111,9 +117,9 @@ public class EmployeeFaker : Faker<Employee>
         RuleFor(o => o.FullName, f => f.Name.FullName(f.PickRandom<Bogus.DataSets.Name.Gender>()));
         RuleFor(o => o.Email, f => f.Internet.Email());
         RuleFor(o => o.JobTitle, f => f.Name.JobTitle());
-        RuleFor(o => o.TypeId, f => f.PickRandom<EmployeeTypes>());
-        RuleFor(o => o.GenderId, f => f.PickRandom<Gender>());
-        RuleFor(o => o.MaritalStatusId, f => f.PickRandom<MaritalStatuses>());
+        RuleFor(o => o.Type, f => f.PickRandom<EmployeeTypes>());
+        RuleFor(o => o.Gender, f => f.PickRandom<Gender>());
+        RuleFor(o => o.MaritalStatus, f => f.PickRandom<MaritalStatuses>());
         RuleFor(o => o.PhotoUrl, f => f.Image.PicsumUrl());
     }
 }

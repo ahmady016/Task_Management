@@ -11,8 +11,8 @@ public class Project
     public Guid Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    public ProjectTypes TypeId { get; set; } = ProjectTypes.WaterFall;
-    public ProjectStatuses StatusId { get; set; } = ProjectStatuses.Waiting;
+    public ProjectTypes Type { get; set; } = ProjectTypes.WaterFall;
+    public ProjectStatuses Status { get; set; } = ProjectStatuses.Waiting;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? CompletedAt { get; set; }
     public Guid CreatedBy { get; set; }
@@ -51,17 +51,21 @@ public class ProjectConfig : IEntityTypeConfiguration<Project>
             .HasColumnName("description")
             .HasColumnType("nvarchar(1000)");
 
-        entity.Property(e => e.TypeId)
+        entity.Property(e => e.Type)
             .IsRequired()
-            .HasDefaultValue(ProjectTypes.WaterFall)
-            .HasColumnName("type_id")
-            .HasColumnType("tinyint");
+            .HasMaxLength(10)
+            .HasColumnName("type")
+            .HasColumnType("varchar(10)")
+            .HasDefaultValue(ProjectTypes.WaterFall.ToString())
+            .HasConversion(value => value.ToString(), value => Enum.Parse<ProjectTypes>(value));
 
-        entity.Property(e => e.StatusId)
+        entity.Property(e => e.Status)
             .IsRequired()
-            .HasDefaultValue(ProjectStatuses.Waiting)
-            .HasColumnName("status_id")
-            .HasColumnType("tinyint");
+            .HasMaxLength(10)
+            .HasColumnName("status")
+            .HasColumnType("varchar(10)")
+            .HasDefaultValue(ProjectStatuses.Waiting.ToString())
+            .HasConversion(value => value.ToString(), value => Enum.Parse<ProjectStatuses>(value));
 
         entity.Property(e => e.CreatedAt)
             .IsRequired()
@@ -105,7 +109,7 @@ public class ProjectFaker : Faker<Project> {
     {
         RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName}");
         RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
-        RuleFor(o => o.TypeId, f => f.PickRandom<ProjectTypes>());
-        RuleFor(o => o.StatusId, f => f.PickRandom<ProjectStatuses>());
+        RuleFor(o => o.Type, f => f.PickRandom<ProjectTypes>());
+        RuleFor(o => o.Status, f => f.PickRandom<ProjectStatuses>());
     }
 }

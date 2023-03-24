@@ -9,7 +9,7 @@ namespace TaskManagement.Entities;
 public class TaskState
 {
     public Guid Id { get; set; }
-    public TaskStates StateId { get; set; }
+    public TaskStates State { get; set; }
     public DateTime From { get; set; } = DateTime.UtcNow;
     public DateTime? To { get; set; }
     public Guid TaskId { get; set; }
@@ -29,11 +29,13 @@ public class TaskStateConfig : IEntityTypeConfiguration<TaskState>
             .HasColumnName("id")
             .HasColumnType("uniqueidentifier");
 
-        entity.Property(e => e.StateId)
+        entity.Property(e => e.State)
             .IsRequired()
-            .HasDefaultValue(TaskStates.Pending)
-            .HasColumnName("state_id")
-            .HasColumnType("tinyint");
+            .HasMaxLength(10)
+            .HasColumnName("state")
+            .HasColumnType("varchar(10)")
+            .HasDefaultValue(TaskStates.Pending.ToString())
+            .HasConversion(value => value.ToString(), value => Enum.Parse<TaskStates>(value));
 
         entity.Property(e => e.From)
             .IsRequired()
@@ -64,7 +66,7 @@ public class TaskStateFaker : Faker<TaskState>
 {
     public TaskStateFaker()
     {
-        RuleFor(o => o.StateId, f => f.PickRandom<TaskStates>());
+        RuleFor(o => o.State, f => f.PickRandom<TaskStates>());
         RuleFor(o => o.To, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6)).OrNull(f, 0.6f));
     }
 }

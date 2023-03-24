@@ -11,7 +11,7 @@ public class AppTask
     public Guid Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    public TaskPriorities PriorityId { get; set; } = TaskPriorities.Normal;
+    public TaskPriorities Priority { get; set; } = TaskPriorities.Normal;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? DueDate { get; set; }
     public DateTime? CompletedAt { get; set; }
@@ -55,11 +55,13 @@ public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
             .HasColumnName("description")
             .HasColumnType("nvarchar(1000)");
 
-        entity.Property(e => e.PriorityId)
+        entity.Property(e => e.Priority)
             .IsRequired()
-            .HasDefaultValue(TaskPriorities.Normal)
+            .HasMaxLength(10)
             .HasColumnName("priority_id")
-            .HasColumnType("tinyint");
+            .HasColumnType("varchar(10)")
+            .HasDefaultValue(TaskPriorities.Normal.ToString())
+            .HasConversion(value => value.ToString(), value => Enum.Parse<TaskPriorities>(value));
 
         entity.Property(e => e.CreatedAt)
             .IsRequired()
@@ -109,7 +111,7 @@ public class AppTaskFaker : Faker<AppTask>
     {
         RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName}");
         RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
-        RuleFor(o => o.PriorityId, f => f.PickRandom<TaskPriorities>());
+        RuleFor(o => o.Priority, f => f.PickRandom<TaskPriorities>());
         RuleFor(o => o.DueDate, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow.AddMonths(3)).OrNull(f, 0.4f));
         RuleFor(o => o.CompletedAt, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6)).OrNull(f, 0.6f));
     }
