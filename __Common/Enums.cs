@@ -57,3 +57,9 @@ public enum TaskStates : byte
     Canceled = 4,
     Completed = 5
 }
+
+public enum AssigneeTypes : byte
+{
+    Employee = 1,
+    Team = 2
+}

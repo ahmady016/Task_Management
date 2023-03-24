@@ -14,6 +14,7 @@ public class Team
 
     public virtual Employee Creator { get; set; }
     public virtual ICollection<TeamMember> Members { get; set; } = new HashSet<TeamMember>();
+    public virtual ICollection<TaskAssignment> AssignedTasks { get; set; } = new HashSet<TaskAssignment>();
 }
 
 public class TeamConfig : IEntityTypeConfiguration<Team>
