@@ -9,10 +9,10 @@ public class TaskAttachment
     public Guid Id { get; set; }
     public string FileUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public Guid CreatedBy { get; set; }
+    public Guid AttachedBy { get; set; }
     public Guid TaskId { get; set; }
 
-    public Employee Creator { get; set; }
+    public Employee Attacher { get; set; }
     public AppTask Task { get; set; }
 }
 
@@ -40,7 +40,7 @@ public class TaskAttachmentConfig : IEntityTypeConfiguration<TaskAttachment>
             .HasColumnName("created_at")
             .HasColumnType("datetime2(3)");
 
-        entity.Property(e => e.CreatedBy)
+        entity.Property(e => e.AttachedBy)
             .IsRequired()
             .HasColumnName("created_by")
             .HasColumnType("uniqueidentifier");
@@ -50,10 +50,10 @@ public class TaskAttachmentConfig : IEntityTypeConfiguration<TaskAttachment>
             .HasColumnName("task_id")
             .HasColumnType("uniqueidentifier");
 
-        entity.HasIndex(e => e.CreatedBy, "tasks_attachments_created_by_fk_index");
-        entity.HasOne(attachment => attachment.Creator)
-            .WithMany(employee => employee.CreatedFiles)
-            .HasForeignKey(attachment => attachment.CreatedBy)
+        entity.HasIndex(e => e.AttachedBy, "tasks_attachments_created_by_fk_index");
+        entity.HasOne(attachment => attachment.Attacher)
+            .WithMany(employee => employee.AttachedFiles)
+            .HasForeignKey(attachment => attachment.AttachedBy)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("employees_tasks_attachments_fk");
 

@@ -27,7 +27,7 @@ public class Employee
     public virtual ICollection<TaskAssignment> AssignedTasks { get; set; } = new HashSet<TaskAssignment>();
     public virtual ICollection<TaskAction> Actions { get; set; } = new HashSet<TaskAction>();
     public virtual ICollection<TaskComment> Comments { get; set; } = new HashSet<TaskComment>();
-    public virtual ICollection<TaskAttachment> CreatedFiles { get; set; } = new HashSet<TaskAttachment>();
+    public virtual ICollection<TaskAttachment> AttachedFiles { get; set; } = new HashSet<TaskAttachment>();
     public virtual ICollection<AppLabel> CreatedLabels { get; set; } = new HashSet<AppLabel>();
     public virtual ICollection<Team> CreatedTeams { get; set; } = new HashSet<Team>();
     public virtual ICollection<TeamMember> JoinedTeams { get; set; } = new HashSet<TeamMember>();

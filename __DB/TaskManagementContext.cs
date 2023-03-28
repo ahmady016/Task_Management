@@ -17,7 +17,7 @@ public partial class TaskManagementContext : DbContext
     public DbSet<TeamMember> TeamsMembers { get; set; }
 
     public DbSet<Project> Projects { get; set; }
-    public DbSet<Task> Tasks { get; set; }
+    public DbSet<AppTask> Tasks { get; set; }
 
     public DbSet<TaskAssignment> Assignments { get; set; }
     public DbSet<TaskAction> Actions { get; set; }
