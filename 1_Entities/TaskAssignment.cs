@@ -19,8 +19,6 @@ public class TaskAssignment
 
     public virtual AppTask Task { get; set; }
     public virtual Employee Assigner { get; set; }
-    public virtual Employee AssignedEmployee { get; set; }
-    public virtual Team AssignedTeam { get; set; }
 }
 
 public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
@@ -50,16 +48,16 @@ public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
             .HasColumnName("assigned_to")
             .HasColumnType("uniqueidentifier");
 
-        entity.HasIndex(e => new { e.TaskId, e.AssignedBy, e.AssignedTo })
-            .HasDatabaseName("task_assignment_unique_index")
-            .IsUnique();
-
         entity.Property(e => e.AssigneeType)
             .IsRequired()
             .HasMaxLength(30)
             .HasColumnName("assignee_type")
             .HasColumnType("varchar(30)")
             .HasConversion(value => value.ToString(), value => Enum.Parse<AssigneeTypes>(value));
+
+        entity.HasIndex(e => new { e.TaskId, e.AssignedBy, e.AssignedTo, e.AssigneeType })
+            .HasDatabaseName("task_assignment_unique_index")
+            .IsUnique();
 
         entity.Property(e => e.AssignedAt)
             .IsRequired()
@@ -89,18 +87,6 @@ public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
             .HasForeignKey(taskAssignee => taskAssignee.AssignedBy)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("assigners_tasks_assignments_fk");
-
-        entity.HasIndex(e => e.AssignedTo, "tasks_assignments_assigned_to_fk_index");
-        entity.HasOne(taskAssignee => taskAssignee.AssignedEmployee)
-            .WithMany(employee => employee.AssignedTasks)
-            .HasForeignKey(taskAssignee => taskAssignee.AssignedTo)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("employees_tasks_assignments_fk");
-        entity.HasOne(taskAssignee => taskAssignee.AssignedTeam)
-            .WithMany(team => team.AssignedTasks)
-            .HasForeignKey(taskAssignee => taskAssignee.AssignedTo)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("teams_tasks_assignments_fk");
 
     }
 }
