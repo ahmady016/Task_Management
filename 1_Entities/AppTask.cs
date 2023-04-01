@@ -60,7 +60,7 @@ public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
             .HasMaxLength(10)
             .HasColumnName("priority_id")
             .HasColumnType("varchar(10)")
-            .HasDefaultValue(TaskPriorities.Normal.ToString())
+            .HasDefaultValue(TaskPriorities.Normal)
             .HasConversion(value => value.ToString(), value => Enum.Parse<TaskPriorities>(value));
 
         entity.Property(e => e.CreatedAt)

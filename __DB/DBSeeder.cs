@@ -30,9 +30,9 @@ public static class DBSeeder
     private static List<TeamMember> _teamsMembers;
     private static List<Project> _projects;
     private static List<AppTask> _tasks = new();
+    private static List<TaskState> _taskStates = new();
     private static List<AppLabel> _labels;
     private static List<TaskLabel> _tasksLabels;
-    private static List<TaskState> _taskStates;
     private static List<TaskAssignment> _taskAssignments;
     private static List<TaskAction> _taskActions;
     private static List<TaskAttachment> _taskAttachments;
@@ -56,17 +56,15 @@ public static class DBSeeder
             _logger.LogInformation($"Done Seeding {_departments.Count} departments and {_employees.Count} employees");
 
             // set each department reference DepartmentId
-            foreach (var department in _departments.Skip(1).Take(4))
-                department.DepartmentId = _departments[0].Id;
-            foreach (var department in _departments.Skip(5).Take(5))
-                department.DepartmentId = _departments[1].Id;
-            foreach (var department in _departments.Skip(10).Take(5))
-                department.DepartmentId = _departments[2].Id;
-            foreach (var department in _departments.Skip(15).Take(5))
-                department.DepartmentId = _departments[3].Id;
-            foreach (var department in _departments.Skip(20).Take(5))
-                department.DepartmentId = _departments[4].Id;
-
+            var _index = 0; var _item = 1; var _step = _faker.Random.Byte(3, 5);
+            while (_item <= _departments.Count)
+            {
+                foreach (var department in _departments.Skip(_item).Take(_step))
+                    department.DepartmentId = _departments[_index].Id;
+                _step = _faker.Random.Byte(3, 5);
+                _item += _step + 1;
+                _index += _step + 1;
+            }
             // set foreach department a manager and foreach employee a department and a manager
             _employees.ForEach(employee => employee.DepartmentId = _faker.Random.ListItem(_departments).Id);
             Guid _managerId = Guid.Empty;
@@ -77,6 +75,8 @@ public static class DBSeeder
                 foreach (var employee in _employees.Where(e => e.DepartmentId == department.Id))
                     employee.ManagerId = _managerId;
             }
+            _db.Departments.UpdateRange(_departments);
+            _db.Employees.UpdateRange(_employees);
 
             _logger.LogInformation($"Begin Setting departments Hierarchies and manager and Seeding employees department and manager");
             await _db.SaveChangesAsync();
@@ -129,11 +129,13 @@ public static class DBSeeder
             _projects = _projectFaker.Generate(50);
             foreach (var project in _projects)
             {
-                var _projectTasks = _taskFaker.GenerateBetween(10, 20);
-                foreach (var task in _projectTasks)
+                _tasks.AddRange(_taskFaker.GenerateBetween(10, 20));
+                foreach (var task in _tasks)
+                {
                     task.States = _taskStateFaker.GenerateBetween(1, 5);
-                _tasks.AddRange(_projectTasks);
-                project.Tasks = _projectTasks;
+                    _taskStates.AddRange(task.States);
+                }
+                project.Tasks = _tasks;
                 project.CreatedBy = _faker.PickRandom<Employee>(_employees).Id;
             }
             _db.Projects.AddRange(_projects);
@@ -261,7 +263,6 @@ public static class DBSeeder
             _logger.LogInformation($"Done Updating Comments({_taskComments.Count}) By Setting reference CommentId");
         }
         #endregion
-
     }
     public static async Task UseDbSeeder(this IApplicationBuilder app)
     {

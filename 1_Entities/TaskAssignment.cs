@@ -90,17 +90,15 @@ public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("assigners_tasks_assignments_fk");
 
-        entity.HasIndex(e => e.AssignedTo, "tasks_assignments_assigned_to_employee_fk_index");
+        entity.HasIndex(e => e.AssignedTo, "tasks_assignments_assigned_to_fk_index");
         entity.HasOne(taskAssignee => taskAssignee.AssignedEmployee)
             .WithMany(employee => employee.AssignedTasks)
-            .HasForeignKey(taskAssignee => new { taskAssignee.AssignedTo, taskAssignee.AssigneeType })
+            .HasForeignKey(taskAssignee => taskAssignee.AssignedTo)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("employees_tasks_assignments_fk");
-
-        entity.HasIndex(e => e.AssignedTo, "tasks_assignments_assigned_to_team_fk_index");
         entity.HasOne(taskAssignee => taskAssignee.AssignedTeam)
             .WithMany(team => team.AssignedTasks)
-            .HasForeignKey(taskAssignee => new { taskAssignee.AssignedTo, taskAssignee.AssigneeType })
+            .HasForeignKey(taskAssignee => taskAssignee.AssignedTo)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("teams_tasks_assignments_fk");
 

@@ -56,7 +56,7 @@ public class ProjectConfig : IEntityTypeConfiguration<Project>
             .HasMaxLength(10)
             .HasColumnName("type")
             .HasColumnType("varchar(10)")
-            .HasDefaultValue(ProjectTypes.WaterFall.ToString())
+            .HasDefaultValue(ProjectTypes.WaterFall)
             .HasConversion(value => value.ToString(), value => Enum.Parse<ProjectTypes>(value));
 
         entity.Property(e => e.Status)
@@ -64,7 +64,7 @@ public class ProjectConfig : IEntityTypeConfiguration<Project>
             .HasMaxLength(10)
             .HasColumnName("status")
             .HasColumnType("varchar(10)")
-            .HasDefaultValue(ProjectStatuses.Waiting.ToString())
+            .HasDefaultValue(ProjectStatuses.Waiting)
             .HasConversion(value => value.ToString(), value => Enum.Parse<ProjectStatuses>(value));
 
         entity.Property(e => e.CreatedAt)

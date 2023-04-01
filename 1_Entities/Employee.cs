@@ -68,7 +68,7 @@ public class EmployeeConfig : IEntityTypeConfiguration<Employee>
             .HasMaxLength(10)
             .HasColumnName("type")
             .HasColumnType("varchar(10)")
-            .HasDefaultValue(EmployeeTypes.FullTime.ToString())
+            .HasDefaultValue(EmployeeTypes.FullTime)
             .HasConversion(value => value.ToString(), value => Enum.Parse<EmployeeTypes>(value));
 
         entity.Property(e => e.Gender)
@@ -76,7 +76,7 @@ public class EmployeeConfig : IEntityTypeConfiguration<Employee>
             .HasMaxLength(6)
             .HasColumnName("gender")
             .HasColumnType("varchar(6)")
-            .HasDefaultValue(Gender.Male.ToString())
+            .HasDefaultValue(Gender.Male)
             .HasConversion(value => value.ToString(), value => Enum.Parse<Gender>(value));
 
         entity.Property(e => e.MaritalStatus)
@@ -84,7 +84,7 @@ public class EmployeeConfig : IEntityTypeConfiguration<Employee>
             .HasMaxLength(10)
             .HasColumnName("marital_status")
             .HasColumnType("varchar(10)")
-            .HasDefaultValue(MaritalStatuses.Single.ToString())
+            .HasDefaultValue(MaritalStatuses.Single)
             .HasConversion(value => value.ToString(), value => Enum.Parse<MaritalStatuses>(value));
 
         entity.Property(e => e.PhotoUrl)
@@ -94,11 +94,11 @@ public class EmployeeConfig : IEntityTypeConfiguration<Employee>
 
         entity.Property(e => e.DepartmentId)
             .HasColumnName("department_id")
-            .HasColumnType("bigint");
+            .HasColumnType("uniqueidentifier");
 
         entity.Property(e => e.ManagerId)
             .HasColumnName("manager_id")
-            .HasColumnType("bigint");
+            .HasColumnType("uniqueidentifier");
 
         entity.HasIndex(e => e.DepartmentId, "employees_department_id_fk_index");
         entity.HasOne(employee => employee.Department)

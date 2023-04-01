@@ -9,7 +9,7 @@ namespace TaskManagement.Entities;
 public class TaskState
 {
     public Guid Id { get; set; }
-    public TaskStates State { get; set; }
+    public TaskStates State { get; set; } = TaskStates.Pending;
     public DateTime From { get; set; } = DateTime.UtcNow;
     public DateTime? To { get; set; }
     public Guid TaskId { get; set; }
@@ -34,7 +34,7 @@ public class TaskStateConfig : IEntityTypeConfiguration<TaskState>
             .HasMaxLength(10)
             .HasColumnName("state")
             .HasColumnType("varchar(10)")
-            .HasDefaultValue(TaskStates.Pending.ToString())
+            .HasDefaultValue(TaskStates.Pending)
             .HasConversion(value => value.ToString(), value => Enum.Parse<TaskStates>(value));
 
         entity.Property(e => e.From)
