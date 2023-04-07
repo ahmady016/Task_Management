@@ -16,9 +16,13 @@ public class TaskAssignment
     public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LeftAt { get; set; }
     public string LeaveReason { get; set; }
+    public Guid? AssignedEmployeeId { get; set; }
+    public Guid? AssignedTeamId { get; set; }
 
     public virtual AppTask Task { get; set; }
     public virtual Employee Assigner { get; set; }
+    public virtual Employee AssignedEmployee { get; set; }
+    public virtual Team AssignedTeam { get; set; }
 }
 
 public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
@@ -48,6 +52,8 @@ public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
             .HasColumnName("assigned_to")
             .HasColumnType("uniqueidentifier");
 
+        entity.HasIndex(e => e.AssignedTo, "tasks_assignments_assigned_to_index");
+
         entity.Property(e => e.AssigneeType)
             .IsRequired()
             .HasMaxLength(30)
@@ -74,6 +80,16 @@ public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
             .HasColumnName("leave_reason")
             .HasColumnType("nvarchar(500)");
 
+        entity.Property(e => e.AssignedEmployeeId)
+            .HasColumnName("assigned_employee_id")
+            .HasColumnType("uniqueidentifier")
+            .HasComputedColumnSql("CASE WHEN [assignee_type] = 'Employee' THEN [assigned_to] ELSE NULL END", stored: true);
+
+        entity.Property(e => e.AssignedTeamId)
+            .HasColumnName("assigned_team_id")
+            .HasColumnType("uniqueidentifier")
+            .HasComputedColumnSql("CASE WHEN [assignee_type] = 'Team' THEN [assigned_to] ELSE NULL END", stored: true);
+
         entity.HasIndex(e => e.TaskId, "tasks_assignments_task_id_fk_index");
         entity.HasOne(taskAssignee => taskAssignee.Task)
             .WithMany(task => task.Assignees)
@@ -87,6 +103,20 @@ public class TaskAssignmentConfig : IEntityTypeConfiguration<TaskAssignment>
             .HasForeignKey(taskAssignee => taskAssignee.AssignedBy)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("assigners_tasks_assignments_fk");
+
+        entity.HasIndex(e => e.AssignedEmployeeId, "tasks_assignments_assigned_to_employee_fk_index");
+        entity.HasOne(taskAssignee => taskAssignee.AssignedEmployee)
+            .WithMany(employee => employee.AssignedTasks)
+            .HasForeignKey(taskAssignee => taskAssignee.AssignedEmployeeId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("employees_tasks_assignments_fk");
+
+        entity.HasIndex(e => e.AssignedTeamId, "tasks_assignments_assigned_to_team_fk_index");
+        entity.HasOne(taskAssignee => taskAssignee.AssignedTeam)
+            .WithMany(team => team.AssignedTasks)
+            .HasForeignKey(taskAssignee => taskAssignee.AssignedTeamId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("teams_tasks_assignments_fk");
 
     }
 }
