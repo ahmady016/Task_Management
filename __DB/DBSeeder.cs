@@ -101,15 +101,15 @@ public static class DBSeeder
         if(_db.Teams.Any() is false && _db.TeamsMembers.Any() is false)
         {
             // Fill teams and team members
-            // _teams = _teamFaker.Generate(50);
-            _teams = Enumerable.Range(1, 50)
-                .Select(_ => new Team()
-                {
-                    Name = _faker.Company.CompanyName(),
-                    Description = _faker.Commerce.ProductAdjective(),
-                    CreatedAt = _faker.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6))
-                })
-                .ToList();
+            // _teams = Enumerable.Range(1, 50)
+            //     .Select(_ => new Team()
+            //     {
+            //         Name = _faker.Company.CompanyName(),
+            //         Description = _faker.Commerce.ProductAdjective(),
+            //         CreatedAt = _faker.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6))
+            //     })
+            //     .ToList();
+            _teams = _teamFaker.Generate(50);
             var index = 0; var chunk = 4;
             foreach (var team in _teams)
             {
@@ -213,7 +213,12 @@ public static class DBSeeder
         #endregion
 
         #region Fill Tasks Assignments, Actions, Attachments and Comments:
-        if(_db.Assignments.Any() is false)
+        if(
+            _db.Assignments.Any() is false &&
+            _db.Actions.Any() is false &&
+            _db.Attachments.Any() is false &&
+            _db.Comments.Any() is false
+        )
         {
             _taskAssignments = _taskAssignmentFaker.Generate(1000);
             foreach (var assignment in _taskAssignments)
@@ -227,16 +232,6 @@ public static class DBSeeder
             }
             _db.Assignments.AddRange(_taskAssignments);
 
-            _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Begin Seeding Tasks Assignments({_taskAssignments.Count})");
-            _logger.LogInformation("=============================================================================================");
-            await _db.SaveChangesAsync();
-            _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Done Seeding Tasks Assignments({_taskAssignments.Count})");
-            _logger.LogInformation("=============================================================================================");
-        }
-        if(_db.Actions.Any() is false)
-        {
             _taskActions = _taskActionFaker.Generate(2000);
             foreach (var action in _taskActions)
             {
@@ -245,16 +240,6 @@ public static class DBSeeder
             }
             _db.Actions.AddRange(_taskActions);
 
-            _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Begin Seeding Tasks Actions({_taskActions.Count})");
-            _logger.LogInformation("=============================================================================================");
-            await _db.SaveChangesAsync();
-            _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Done Seeding Tasks Actions({_taskActions.Count})");
-            _logger.LogInformation("=============================================================================================");
-        }
-        if(_db.Attachments.Any() is false)
-        {
             _taskAttachments = _taskAttachmentFaker.Generate(1500);
             foreach (var attachment in _taskAttachments)
             {
@@ -263,16 +248,6 @@ public static class DBSeeder
             }
             _db.Attachments.AddRange(_taskAttachments);
 
-            _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Begin Seeding Tasks Attachments({_taskAttachments.Count})");
-            _logger.LogInformation("=============================================================================================");
-            await _db.SaveChangesAsync();
-            _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Done Seeding Tasks Attachments({_taskAttachments.Count})");
-            _logger.LogInformation("=============================================================================================");
-        }
-        if(_db.Comments.Any() is false)
-        {
             _taskComments = _taskCommentFaker.Generate(2000);
             foreach (var comment in _taskComments)
             {
@@ -282,11 +257,11 @@ public static class DBSeeder
             _db.Comments.AddRange(_taskComments);
 
             _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Begin Seeding Tasks Comments({_taskComments.Count})");
+            _logger.LogInformation($"Begin Seeding Tasks Assignments({_taskAssignments.Count}), Actions({_taskActions.Count}), Attachments({_taskAttachments.Count}) and Comments({_taskComments.Count})");
             _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
             _logger.LogInformation("=============================================================================================");
-            _logger.LogInformation($"Done Seeding Tasks Comments({_taskComments.Count})");
+            _logger.LogInformation($"Done Seeding Tasks Assignments({_taskAssignments.Count}), Actions({_taskActions.Count}), Attachments({_taskAttachments.Count}) and Comments({_taskComments.Count})");
             _logger.LogInformation("=============================================================================================");
         }
         else
