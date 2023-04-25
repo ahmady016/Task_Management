@@ -58,6 +58,6 @@ public class DepartmentFaker : Faker<Department> {
     public DepartmentFaker()
     {
         RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.Department()}");
-        RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
+        RuleFor(o => o.Description, f => f.Commerce.ProductAdjective());
     }
 }

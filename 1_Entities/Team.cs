@@ -35,6 +35,10 @@ public class TeamConfig : IEntityTypeConfiguration<Team>
             .HasColumnName("name")
             .HasColumnType("nvarchar(100)");
 
+        entity.HasIndex(e => e.Name)
+            .HasDatabaseName("teams_name_unique_index")
+            .IsUnique();
+
         entity.Property(e => e.Description)
             .IsRequired()
             .HasMaxLength(1000)
@@ -67,8 +71,8 @@ public class TeamFaker : Faker<Team>
     private short counter = 1;
     public TeamFaker()
     {
-        RuleFor(o => o.Name, f => $"{counter++}_{f.Commerce.ProductName}");
-        RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
-        RuleFor(o => o.CreatedAt, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6)).OrNull(f, 0.6f));
+        RuleFor(o => o.Name, f => $"{counter++}_{f.Company.CompanyName()}");
+        RuleFor(o => o.Description, f => f.Commerce.ProductAdjective());
+        RuleFor(o => o.CreatedAt, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6)));
     }
 }

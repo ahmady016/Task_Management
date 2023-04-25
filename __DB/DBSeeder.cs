@@ -51,9 +51,13 @@ public static class DBSeeder
             _db.Departments.AddRange(_departments);
             _db.Employees.AddRange(_employees);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding {_departments.Count} departments and {_employees.Count} employees");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding {_departments.Count} departments and {_employees.Count} employees");
+            _logger.LogInformation("=============================================================================================");
 
             // set each department reference DepartmentId
             var _index = 0; var _item = 1; var _step = _faker.Random.Byte(3, 5);
@@ -78,9 +82,13 @@ public static class DBSeeder
             _db.Departments.UpdateRange(_departments);
             _db.Employees.UpdateRange(_employees);
 
-            _logger.LogInformation($"Begin Setting departments Hierarchies and manager and Seeding employees department and manager");
+            _logger.LogInformation("=============================================================================================");
+            _logger.LogInformation($"Begin Setting departments [Hierarchies, manager] and Setting employees [department, manager]");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
-            _logger.LogInformation($"Done Setting departments Hierarchies and manager and Seeding employees department and manager");
+            _logger.LogInformation("============================================================================================");
+            _logger.LogInformation($"Done Setting departments [Hierarchies, manager] and Setting employees [department, manager]");
+            _logger.LogInformation("============================================================================================");
         }
         else
         {
@@ -93,12 +101,21 @@ public static class DBSeeder
         if(_db.Teams.Any() is false && _db.TeamsMembers.Any() is false)
         {
             // Fill teams and team members
-            _teams = _teamFaker.Generate(50);
+            // _teams = _teamFaker.Generate(50);
+            _teams = Enumerable.Range(1, 50)
+                .Select(_ => new Team()
+                {
+                    Name = _faker.Company.CompanyName(),
+                    Description = _faker.Commerce.ProductAdjective(),
+                    CreatedAt = _faker.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6))
+                })
+                .ToList();
             var index = 0; var chunk = 4;
             foreach (var team in _teams)
             {
                 team.CreatedBy = _faker.PickRandom<Employee>(_employees).Id;
-                var _members = _employees.Skip(chunk * index++).Take(chunk).ToList();
+                team.Members = new List<TeamMember>();
+                var _members = _employees.Skip(chunk * index).Take(chunk).ToList();
                 foreach (var member in _members)
                 {
                     team.Members.Add(new TeamMember()
@@ -108,12 +125,17 @@ public static class DBSeeder
                         JoinedAt = _faker.Date.Between(DateTime.UtcNow.AddMonths(-3), DateTime.UtcNow.AddMonths(4))
                     });
                 }
+                index++;
             }
             _db.Teams.AddRange(_teams);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding {_teams.Count} teams with team members");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding {_teams.Count} teams with team members");
+            _logger.LogInformation("=============================================================================================");
         }
         else
         {
@@ -129,20 +151,27 @@ public static class DBSeeder
             _projects = _projectFaker.Generate(50);
             foreach (var project in _projects)
             {
-                _tasks.AddRange(_taskFaker.GenerateBetween(10, 20));
-                foreach (var task in _tasks)
+                var projectTasks = _taskFaker.GenerateBetween(10, 20);
+                foreach (var task in projectTasks)
                 {
-                    task.States = _taskStateFaker.GenerateBetween(1, 5);
-                    _taskStates.AddRange(task.States);
+                    var taskStates = _taskStateFaker.GenerateBetween(1, 5);
+                    task.States = taskStates;
+                    task.CreatedBy = _faker.PickRandom<Employee>(_employees).Id;
+                    _taskStates.AddRange(taskStates);
                 }
                 project.Tasks = _tasks;
                 project.CreatedBy = _faker.PickRandom<Employee>(_employees).Id;
+                _tasks.AddRange(projectTasks);
             }
             _db.Projects.AddRange(_projects);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding {_projects.Count} projects and {_tasks.Count} tasks");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding {_projects.Count} projects and {_tasks.Count} tasks");
+            _logger.LogInformation("=============================================================================================");
         }
         else
         {
@@ -156,19 +185,25 @@ public static class DBSeeder
         {
             // Fill labels and tasks labels
             _labels = _labelFaker.Generate(50);
-            var index = 0; var chunk = 4;
+            var _index = 0; var _chunk = _faker.Random.Byte(1, 4);
             foreach (var label in _labels)
             {
                 label.CreatedBy = _faker.PickRandom<Employee>(_employees).Id;
-                var _labelTasks = _tasks.Skip(chunk * index++).Take(chunk).ToList();
-                foreach (var task in _labelTasks)
-                    label.Tasks.Add(new TaskLabel() { LabelId = label.Id, TaskId = task.Id });
+                label.Tasks = _tasks.Skip(_chunk * _index).Take(_chunk)
+                    .Select(task => new TaskLabel() { LabelId = label.Id, TaskId = task.Id })
+                    .ToList();
+                _chunk = _faker.Random.Byte(1, 4);
+                _index++;
             }
             _db.Labels.AddRange(_labels);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding {_labels.Count} Labels with Tasks Labels");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding {_labels.Count} Labels with Tasks Labels");
+            _logger.LogInformation("=============================================================================================");
         }
         else
         {
@@ -192,9 +227,13 @@ public static class DBSeeder
             }
             _db.Assignments.AddRange(_taskAssignments);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding Tasks Assignments({_taskAssignments.Count})");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding Tasks Assignments({_taskAssignments.Count})");
+            _logger.LogInformation("=============================================================================================");
         }
         if(_db.Actions.Any() is false)
         {
@@ -206,9 +245,13 @@ public static class DBSeeder
             }
             _db.Actions.AddRange(_taskActions);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding Tasks Actions({_taskActions.Count})");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding Tasks Actions({_taskActions.Count})");
+            _logger.LogInformation("=============================================================================================");
         }
         if(_db.Attachments.Any() is false)
         {
@@ -220,9 +263,13 @@ public static class DBSeeder
             }
             _db.Attachments.AddRange(_taskAttachments);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding Tasks Attachments({_taskAttachments.Count})");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding Tasks Attachments({_taskAttachments.Count})");
+            _logger.LogInformation("=============================================================================================");
         }
         if(_db.Comments.Any() is false)
         {
@@ -234,9 +281,13 @@ public static class DBSeeder
             }
             _db.Comments.AddRange(_taskComments);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Seeding Tasks Comments({_taskComments.Count})");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Seeding Tasks Comments({_taskComments.Count})");
+            _logger.LogInformation("=============================================================================================");
         }
         else
         {
@@ -258,9 +309,13 @@ public static class DBSeeder
             }
             _db.Comments.UpdateRange(_taskComments);
 
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Begin Updating Comments({_taskComments.Count}) By Setting reference CommentId");
+            _logger.LogInformation("=============================================================================================");
             await _db.SaveChangesAsync();
+            _logger.LogInformation("=============================================================================================");
             _logger.LogInformation($"Done Updating Comments({_taskComments.Count}) By Setting reference CommentId");
+            _logger.LogInformation("=============================================================================================");
         }
         #endregion
     }
