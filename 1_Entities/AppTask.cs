@@ -58,7 +58,7 @@ public class AppTaskConfig : IEntityTypeConfiguration<AppTask>
         entity.Property(e => e.Priority)
             .IsRequired()
             .HasMaxLength(10)
-            .HasColumnName("priority_id")
+            .HasColumnName("priority")
             .HasColumnType("varchar(10)")
             .HasDefaultValue(TaskPriorities.Normal)
             .HasConversion(value => value.ToString(), value => Enum.Parse<TaskPriorities>(value));
@@ -109,7 +109,7 @@ public class AppTaskFaker : Faker<AppTask>
     private short counter = 1;
     public AppTaskFaker()
     {
-        RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName}");
+        RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName()}");
         RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
         RuleFor(o => o.Priority, f => f.PickRandom<TaskPriorities>());
         RuleFor(o => o.DueDate, f => f.Date.Between(DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow.AddMonths(3)).OrNull(f, 0.4f));

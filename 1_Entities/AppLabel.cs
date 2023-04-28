@@ -81,7 +81,7 @@ public class AppLabelFaker : Faker<AppLabel>
     private short counter = 1;
     public AppLabelFaker()
     {
-        RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName}");
+        RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName()}");
         RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
         RuleFor(o => o.ColorName, f => f.Internet.Color());
         RuleFor(o => o.ColorCode, f => f.Internet.Color());
