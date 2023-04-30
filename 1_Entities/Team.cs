@@ -72,7 +72,7 @@ public class TeamFaker : Faker<Team>
     public TeamFaker()
     {
         RuleFor(o => o.Name, f => $"{counter++}_{f.Company.CompanyName()}");
-        RuleFor(o => o.Description, f => f.Commerce.ProductAdjective());
+        RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
         RuleFor(o => o.CreatedAt, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(6)));
     }
 }

@@ -107,7 +107,7 @@ public class ProjectFaker : Faker<Project> {
     private short counter = 1;
     public ProjectFaker()
     {
-        RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName}");
+        RuleFor(o => o.Title, f => $"{counter++}_{f.Commerce.ProductName()}");
         RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
         RuleFor(o => o.Type, f => f.PickRandom<ProjectTypes>());
         RuleFor(o => o.Status, f => f.PickRandom<ProjectStatuses>());

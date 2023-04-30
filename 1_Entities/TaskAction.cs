@@ -30,9 +30,9 @@ public class TaskActionConfig : IEntityTypeConfiguration<TaskAction>
 
         entity.Property(e => e.Description)
             .IsRequired()
-            .HasMaxLength(500)
+            .HasMaxLength(1000)
             .HasColumnName("description")
-            .HasColumnType("nvarchar(500)");
+            .HasColumnType("nvarchar(1000)");
 
         entity.Property(e => e.Date)
             .IsRequired()
@@ -69,7 +69,7 @@ public class TaskActionConfig : IEntityTypeConfiguration<TaskAction>
 public class TaskActionFaker : Faker<TaskAction> {
     public TaskActionFaker()
     {
-        RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
+        RuleFor(o => o.Description, f => f.Lorem.Sentences(f.Random.Byte(3, 6)));
         RuleFor(o => o.Date, f => f.Date.Between(DateTime.UtcNow.AddMonths(-3), DateTime.UtcNow.AddMonths(3)));
     }
 }

@@ -126,6 +126,6 @@ public class TaskAssignmentFaker : Faker<TaskAssignment> {
     {
         RuleFor(o => o.AssignedAt, f => f.Date.Between(DateTime.UtcNow.AddMonths(-6), DateTime.UtcNow));
         RuleFor(o => o.LeftAt, f => f.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddMonths(4)).OrNull(f, 0.8f));
-        RuleFor(o => o.LeaveReason, f => f.Lorem.Sentences(f.Random.Byte(1, 5).OrNull(f, 0.8f)));
+        RuleFor(o => o.LeaveReason, f => f.Lorem.Sentences(f.Random.Byte(1, 5)).OrNull(f, 0.8f));
     }
 }
