@@ -17,6 +17,9 @@ GO
 UPDATE tasks_assignments SET leave_reason = NULL WHERE left_at is NULL
 GO
 
+--#region main sql views
+DROP VIEW hierarchies_with_employees_view
+GO
 CREATE VIEW hierarchies_with_employees_view
 AS
 WITH hierarchies AS
@@ -43,6 +46,8 @@ SELECT h.*,
 FROM hierarchies h JOIN employees e ON h.department_id = e.department_id
 GO
 
+DROP VIEW hierarchies_tree_view
+GO
 CREATE VIEW hierarchies_tree_view
 AS
 WITH tree_view AS
@@ -70,6 +75,8 @@ SELECT	t.id AS department_id,
 FROM tree_view t LEFT JOIN departments boss ON t.department_id = boss.id
 GO
 
+DROP VIEW labels_with_tasks_view
+GO
 CREATE VIEW labels_with_tasks_view
 AS
 SELECT
@@ -99,6 +106,8 @@ FROM labels l
     LEFT JOIN teams tm ON tm.id = ta.assigned_team_id
 GO
 
+DROP VIEW tasks_with_all_assignees_view
+GO
 CREATE VIEW tasks_with_all_assignees_view
 AS
 WITH _assignments AS
@@ -138,6 +147,9 @@ JOIN _assignments a	ON t.id = a.task_id
 JOIN employees	  e	ON t.created_by = e.id
 GO
 
+
+DROP VIEW tasks_with_last_assignee_view
+GO
 CREATE VIEW tasks_with_last_assignee_view
 AS
 WITH _assignments AS
@@ -186,6 +198,8 @@ JOIN tasks_attachments 	f	ON t.id = f.task_id
 WHERE row_id = 1
 GO
 
+DROP VIEW tasks_stats_view
+GO
 CREATE VIEW tasks_stats_view
 AS
 SELECT
@@ -200,4 +214,13 @@ SELECT
     SUM(CASE WHEN task_priority = 'High' OR task_priority = 'RealTime' THEN 1 ELSE 0 END) AS important
 FROM tasks_with_last_assignee_view
 GROUP BY assigned_employee_id, assigned_employee_name, assigned_team_id, assigned_team_name
+GO
+--#endregion main sql views
+
+SELECT * FROM hierarchies_with_employees_view
+SELECT * FROM hierarchies_tree_view
+SELECT * FROM labels_with_tasks_view
+SELECT * FROM tasks_with_all_assignees_view
+SELECT * FROM tasks_with_last_assignee_view
+SELECT * FROM tasks_stats_view
 GO
