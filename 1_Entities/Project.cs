@@ -111,5 +111,6 @@ public class ProjectFaker : Faker<Project> {
         RuleFor(o => o.Description, f => f.Commerce.ProductDescription());
         RuleFor(o => o.Type, f => f.PickRandom<ProjectTypes>());
         RuleFor(o => o.Status, f => f.PickRandom<ProjectStatuses>());
+        RuleFor(o => o.CompletedAt, f => f.Date.Between(DateTime.UtcNow.AddMonths(-3), DateTime.UtcNow).OrNull(f, 0.8f));
     }
 }

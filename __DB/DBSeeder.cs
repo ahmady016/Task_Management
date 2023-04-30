@@ -159,8 +159,9 @@ public static class DBSeeder
                     task.CreatedBy = _faker.PickRandom<Employee>(_employees).Id;
                     _taskStates.AddRange(taskStates);
                 }
-                project.Tasks = _tasks;
+                project.Tasks = projectTasks;
                 project.CreatedBy = _faker.PickRandom<Employee>(_employees).Id;
+                project.ManageBy = _faker.PickRandom<Employee>(_employees).Id;
                 _tasks.AddRange(projectTasks);
             }
             _db.Projects.AddRange(_projects);
