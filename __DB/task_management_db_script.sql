@@ -1,4 +1,9 @@
---
+--#region fix tasks_assignments leave_reason seeding bug
+UPDATE tasks_assignments SET leave_reason = NULL WHERE left_at is NULL
+GO
+--#endregion
+
+--#region test all tables
 SELECT * FROM departments
 SELECT * FROM employees
 SELECT * FROM teams
@@ -13,11 +18,9 @@ SELECT * FROM tasks_attachments
 SELECT * FROM tasks_actions
 SELECT * FROM tasks_comments
 GO
+--#endregion
 
-UPDATE tasks_assignments SET leave_reason = NULL WHERE left_at is NULL
-GO
-
---#region main sql views
+--#region hierarchies_with_employees_view
 DROP VIEW hierarchies_with_employees_view
 GO
 CREATE VIEW hierarchies_with_employees_view
@@ -45,7 +48,9 @@ SELECT h.*,
     e.photo_url AS employee_photo
 FROM hierarchies h JOIN employees e ON h.department_id = e.department_id
 GO
+--#endregion
 
+--#region hierarchies_tree_view
 DROP VIEW hierarchies_tree_view
 GO
 CREATE VIEW hierarchies_tree_view
@@ -74,7 +79,9 @@ SELECT	t.id AS department_id,
     boss.title AS boss_title
 FROM tree_view t LEFT JOIN departments boss ON t.department_id = boss.id
 GO
+--#endregion
 
+--#region labels_with_tasks_view
 DROP VIEW labels_with_tasks_view
 GO
 CREATE VIEW labels_with_tasks_view
@@ -105,7 +112,41 @@ FROM labels l
     LEFT JOIN employees em ON em.id = ta.assigned_employee_id
     LEFT JOIN teams tm ON tm.id = ta.assigned_team_id
 GO
+--#endregion
 
+--#region projects_with_tasks_view
+-- DROP VIEW projects_with_tasks_view
+GO
+CREATE VIEW projects_with_tasks_view
+AS
+SELECT
+    p.id AS project_id,
+    p.title AS project_title,
+    p.description AS project_description,
+    p.created_at AS project_created_at,
+    p.completed_at AS project_completed_at,
+    e.id AS project_creator_id,
+    e.full_name AS project_creator_name,
+    em.id AS project_manager_id,
+    em.full_name AS project_manager_name,
+    t.id AS task_id,
+    t.title AS task_title,
+    t.description AS task_description,
+    t.priority AS task_priority,
+    t.created_at AS task_created_at,
+    t.completed_at AS task_completed_at,
+    t.due_date AS task_due_date,
+    emp.id AS task_creator_id,
+    emp.full_name AS task_creator_name
+FROM projects p
+    JOIN employees e ON e.id = p.created_by
+    JOIN employees em ON em.id = p.manage_by
+    JOIN tasks t ON p.id = t.project_id
+    JOIN employees emp ON emp.id = t.created_by
+GO
+--#endregion
+
+--#region tasks_with_all_assignees_view
 DROP VIEW tasks_with_all_assignees_view
 GO
 CREATE VIEW tasks_with_all_assignees_view
@@ -146,8 +187,9 @@ FROM tasks t
 JOIN _assignments a	ON t.id = a.task_id
 JOIN employees	  e	ON t.created_by = e.id
 GO
+--#endregion
 
-
+--#region tasks_with_last_assignee_view
 DROP VIEW tasks_with_last_assignee_view
 GO
 CREATE VIEW tasks_with_last_assignee_view
@@ -197,10 +239,30 @@ JOIN employees	        e	ON t.created_by = e.id
 JOIN tasks_attachments 	f	ON t.id = f.task_id
 WHERE row_id = 1
 GO
+--#endregion
 
-DROP VIEW tasks_stats_view
+--#region projects_tasks_stats_view
+-- DROP VIEW projects_tasks_stats_view
 GO
-CREATE VIEW tasks_stats_view
+CREATE VIEW projects_tasks_stats_view
+AS
+SELECT
+    project_id,
+    project_title,
+    SUM(CASE WHEN task_completed_at is NULL THEN 0 ELSE 1 END) AS completed,
+    SUM(CASE WHEN task_completed_at is NULL AND task_due_date < SYSDATETIME() THEN 1 ELSE 0 END) AS overdue,
+    SUM(CASE WHEN task_completed_at is NULL AND (task_due_date >= SYSDATETIME() OR task_due_date is NULL) THEN 1 ELSE 0 END) AS running,
+    COUNT(*) AS total,
+    SUM(CASE WHEN task_priority = 'High' OR task_priority = 'RealTime' THEN 1 ELSE 0 END) AS important
+FROM projects_with_tasks_view
+GROUP BY project_id, project_title
+GO
+--#endregion
+
+--#region assignees_tasks_stats_view
+-- DROP VIEW assignees_tasks_stats_view
+GO
+CREATE VIEW assignees_tasks_stats_view
 AS
 SELECT
     assigned_employee_id,
@@ -215,12 +277,19 @@ SELECT
 FROM tasks_with_last_assignee_view
 GROUP BY assigned_employee_id, assigned_employee_name, assigned_team_id, assigned_team_name
 GO
---#endregion main sql views
+--#endregion
 
+--#region test all views
 SELECT * FROM hierarchies_with_employees_view
 SELECT * FROM hierarchies_tree_view
+
 SELECT * FROM labels_with_tasks_view
+SELECT * FROM projects_with_tasks_view
+
 SELECT * FROM tasks_with_all_assignees_view
 SELECT * FROM tasks_with_last_assignee_view
-SELECT * FROM tasks_stats_view
+
+SELECT * FROM projects_tasks_stats_view
+SELECT * FROM assignees_tasks_stats_view
 GO
+--#endregion
