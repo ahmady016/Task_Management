@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using TaskManagement.Entities;
+using TaskManagement.Views;
 
 namespace TaskManagement.DB;
 
@@ -27,6 +28,18 @@ public partial class TaskManagementContext : DbContext
 
     public DbSet<AppLabel> Labels { get; set; }
     public DbSet<TaskLabel> TasksLabels { get; set; }
+
+    public DbSet<HierarchiesWithEmployeesView> HierarchiesWithEmployeesView { get; set; }
+    public DbSet<HierarchiesTreeView> HierarchiesTreeView { get; set; }
+
+    public DbSet<LabelsWithTasksView> LabelsWithTasksView { get; set; }
+    public DbSet<ProjectsWithTasksView> ProjectsWithTasksView { get; set; }
+
+    public DbSet<TasksWithAllAssigneesView> TasksWithAllAssigneesView { get; set; }
+    public DbSet<TasksWithLastAssigneeView> TasksWithLastAssigneeView { get; set; }
+
+    public DbSet<ProjectsTasksStatsView> ProjectsTasksStatsView { get; set; }
+    public DbSet<AssigneesTasksStatsView> AssigneesTasksStatsView { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
